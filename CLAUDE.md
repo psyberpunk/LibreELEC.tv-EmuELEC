@@ -1,151 +1,162 @@
 # CLAUDE.md - AI Assistant Guide for LibreELEC/EmuELEC
 
-**Last Updated:** 2026-02-05
-
 ## Project Overview
 
-LibreELEC is a **"Just enough OS" Linux distribution build system** for the Kodi media center software. This repository contains:
-- Complete cross-platform build system for embedded Linux distributions
-- Support for multiple hardware platforms (ARM, ARM64, x86_64, Rockchip, Amlogic, RPi, etc.)
-- Modular package management system with 1000+ packages
-- Customizable distribution and device configurations
-- Parallel multi-threaded build infrastructure
+LibreELEC is a **"Just enough OS" Linux distribution build system** for the Kodi media center software. This fork includes EmuELEC emulation packages.
 
-**License:** GPLv2  
-**Upstream:** Forked from OpenELEC; uses GeeXboX/OpenBricks build system foundation
+- Cross-platform build system for embedded Linux distributions
+- Support for 9 hardware platform families with 28 device configurations
+- 464 packages organized in 33 categories
+- Two distribution profiles: LibreELEC (Kodi media center) and LEIoT (IoT/container)
+- Multi-threaded parallel build infrastructure with stamp-based incremental builds
+
+**License:** GPLv2
+**Current Version:** OS 13.0 (development), Addon 12.80.5
+**Upstream:** Forked from LibreELEC/LibreELEC.tv, itself descended from OpenELEC
 
 ---
 
-## 🏗️ Repository Structure
+## Repository Structure
 
 ```
 LibreELEC.tv-EmuELEC/
-├── distributions/          # Distribution profiles (LibreELEC, LEIoT)
-│   ├── LibreELEC/         # Main distribution config
-│   └── LEIoT/             # IoT variant
-├── projects/              # Hardware platform support
-│   ├── ARM/               # Generic ARM (32-bit)
-│   ├── Allwinner/         # Allwinner SoCs
-│   ├── Amlogic/           # Amlogic SoCs (S905, S912, etc.)
-│   ├── Generic/           # x86_64 generic
-│   ├── NXP/               # NXP iMX platforms
-│   ├── Qualcomm/          # Qualcomm Snapdragon
-│   ├── RPi/               # Raspberry Pi
-│   ├── Rockchip/          # Rockchip SoCs (RK3399, etc.)
-│   └── Samsung/           # Samsung Exynos
-├── packages/              # Package build recipes (1000+ packages)
-│   ├── addons/            # Kodi addons
-│   ├── audio/             # Audio libraries and tools
-│   ├── compress/          # Compression utilities
-│   ├── databases/         # Database engines
-│   ├── debug/             # Debugging tools
-│   ├── devel/             # Development libraries
-│   ├── emulation/         # Emulation packages (RetroArch, cores)
-│   ├── graphics/          # Graphics drivers and libraries
-│   ├── lang/              # Language runtimes (Python, etc.)
-│   ├── linux/             # Linux kernel and modules
-│   ├── linux-firmware/    # Firmware blobs
-│   ├── mediacenter/       # Kodi and related packages
-│   ├── multimedia/        # Media libraries (ffmpeg, etc.)
-│   ├── network/           # Networking tools
-│   ├── python/            # Python packages
-│   ├── rust/              # Rust packages
-│   ├── security/          # Security libraries
-│   ├── sysutils/          # System utilities
-│   ├── textproc/          # Text processing tools
-│   └── tools/             # Build and runtime tools
-├── scripts/               # Build automation scripts
-│   ├── build              # Single package build script
-│   ├── build_mt           # Multi-threaded build orchestrator
-│   ├── image              # Image generation script
-│   ├── pkgbuild           # Per-package build executor
-│   └── [many helpers]     # Extract, install, unpack, etc.
-├── config/                # Build system configuration
-│   ├── functions          # Core shell functions
-│   ├── options            # Default build options
-│   ├── arch.aarch64       # ARM64 architecture config
-│   ├── arch.arm           # ARM32 architecture config
-│   ├── arch.x86_64        # x86_64 architecture config
-│   ├── multithread        # Parallel build configuration
-│   ├── sources            # Source download URLs
-│   └── [other configs]    # Graphics, optimization, etc.
-├── tools/                 # Utility scripts
-│   ├── docker/            # Docker build support
-│   └── [various tools]    # Kernel config, package checkers
+├── distributions/          # Distribution profiles
+│   ├── LibreELEC/         # Kodi media center distro (version, options, splash images)
+│   └── LEIoT/             # IoT variant (no Kodi, Docker-focused)
+├── projects/              # Hardware platform support (9 projects, 28 devices)
+│   ├── Allwinner/         # Allwinner SoCs (A64, H2-plus, H3, H5, H6, R40)
+│   ├── Amlogic/           # Amlogic SoCs (AMLGX)
+│   ├── ARM/               # Generic ARM (ARMv7, ARMv8)
+│   ├── Generic/           # x86_64 (Generic, Generic-legacy, gbm, wayland, x11)
+│   ├── NXP/               # NXP iMX (iMX6, iMX8)
+│   ├── Qualcomm/          # Qualcomm (Dragonboard)
+│   ├── Rockchip/          # Rockchip (RK3288, RK3328, RK3399, RK356X, RK3576, RK3588)
+│   ├── RPi/               # Raspberry Pi (RPi, RPi2, RPi4, RPi5)
+│   └── Samsung/           # Samsung (Exynos)
+├── packages/              # Package build recipes (464 packages in 33 categories)
+│   ├── addons/            # Kodi addons (7)
+│   ├── audio/             # Audio libraries (32)
+│   ├── compress/          # Compression (9)
+│   ├── databases/         # Databases (2)
+│   ├── debug/             # Debug tools (8)
+│   ├── devel/             # Development libs (76)
+│   ├── emulation/         # Emulators/RetroArch cores (79)
+│   ├── graphics/          # Graphics drivers/libs (34)
+│   ├── lang/              # Language runtimes (10)
+│   ├── linux/             # Kernel (3)
+│   ├── linux-driver-addons/  # Driver addons (1)
+│   ├── linux-firmware/    # Firmware blobs (12)
+│   ├── mediacenter/       # Kodi packages (8)
+│   ├── multimedia/        # Media libs/ffmpeg (22)
+│   ├── network/           # Networking (30)
+│   ├── print/             # Printing (1)
+│   ├── python/            # Python packages (4)
+│   ├── rust/              # Rust packages (6)
+│   ├── security/          # Security libs (9)
+│   ├── sysutils/          # System utilities (33)
+│   ├── textproc/          # Text processing (12)
+│   ├── tools/             # Build/runtime tools (29)
+│   ├── virtual/           # Virtual/meta packages (16)
+│   ├── wayland/           # Wayland packages (9)
+│   ├── web/               # Web packages (3)
+│   └── x11/               # X11 packages (9)
+├── scripts/               # Build automation (24 shell + 2 Python scripts)
+├── config/                # Build system configuration (15 files/dirs)
+├── tools/                 # Utility scripts (19+ tools)
+├── licenses/              # License files (51)
+├── .github/               # Issue templates, funding config
 ├── Makefile               # Top-level build targets
-├── README.md              # Project documentation
 ├── CONTRIBUTING.md        # Contribution guidelines
-└── CHANGELOG              # Version history
+├── README.md              # Project documentation
+└── CHANGELOG              # References GitHub commit history
 ```
 
 ---
 
-## 🔧 Build System Architecture
+## Build System Architecture
 
-### Configuration Hierarchy
+### Configuration Loading Order
 
-The build system loads configuration in **cascading order** (later configs override earlier):
+The build system sources configuration files in this exact order (from `config/options`):
 
-1. **Distribution options** (`distributions/LibreELEC/options`)
-   - Version, release type, branding
-   - Default packages and features
+1. **`config/functions`** - Core shell helper functions
+2. **`distributions/<DISTRO>/version`** - Version numbers (OS_VERSION, ADDON_VERSION)
+3. **`distributions/<DISTRO>/options`** - Distribution features (Kodi, PulseAudio, Samba, etc.)
+4. **`projects/<PROJECT>/options`** - Project-level settings (architecture, bootloader, kernel)
+5. **`projects/<PROJECT>/devices/<DEVICE>/options`** - Device-specific tuning (CPU, firmware, console)
+6. **`config/arch.<TARGET_ARCH>`** - Architecture compiler flags and toolchain
+7. **`config/graphic`** - Graphics driver configuration
+8. **`config/path`** - Directory structure definitions
+9. **`$ROOT/.libreelec/options`** - Local persistent overrides (optional)
+10. **`$HOME/.libreelec/options`** - Global persistent overrides (optional)
 
-2. **Project options** (`projects/ARM/options`)
-   - Architecture (aarch64, arm, x86_64)
-   - Bootloader, kernel target
-   - Default graphic drivers
+Later files override earlier ones. Device options are the most specific.
 
-3. **Device options** (`projects/Rockchip/devices/RK3399/options`) ← **Most specific**
-   - CPU tuning (cortex-a72.cortex-a53)
-   - Firmware requirements (ATF, u-boot)
-   - Kernel parameters, console settings
-
-4. **Architecture config** (`config/arch.aarch64`)
-   - Toolchain paths
-   - CFLAGS, LDFLAGS
-   - CPU-specific optimizations
-
-### Build Targets (Makefile)
+### Environment Variables
 
 ```bash
-make system      # Full system build
-make release     # Release build (default)
-make image       # Create filesystem image
+PROJECT=Rockchip           # Hardware platform (default: Generic)
+DEVICE=RK3399              # Specific device (default: Generic for Generic project)
+ARCH=aarch64               # Target architecture (default: x86_64)
+DISTRO=LibreELEC           # Distribution (default: LibreELEC)
+CONCURRENCY_MAKE_LEVEL=N   # Parallel jobs (default: nproc)
+VERBOSE=yes                # Verbose compilation (default: yes)
+```
+
+### Makefile Targets
+
+```bash
+make release     # Default target - release build via scripts/image
+make system      # Full system build via scripts/image
+make image       # Create filesystem image (mkimage)
 make noobs       # NOOBS-compatible image
-make clean       # Clean build artifacts
+make clean       # Remove build artifacts
 make distclean   # Clean everything including sources
-make src-pkg     # Package sources
+make src-pkg     # Package sources into sources.tar.xz
 ```
 
 ### Build Scripts
 
 | Script | Purpose |
 |--------|---------|
-| `scripts/image` | **Main entry point** - Validates configs, initiates build |
-| `scripts/build` | Single-package build (handles dependencies) |
-| `scripts/build_mt` | **Multi-threaded orchestrator** - Parallel compilation with worker pools |
+| `scripts/image` | Main entry point - validates configs, initiates full build |
+| `scripts/build` | Single-package build with dependency resolution and stamp caching |
+| `scripts/build_mt` | Multi-threaded orchestrator - parallel compilation with worker pools |
 | `scripts/pkgbuild` | Per-package build/install executor |
 | `scripts/install` | Install package to target rootfs |
-| `scripts/extract` | Extract and patch source tarballs |
-| `scripts/unpack` | Unpack sources with git/svn/wget support |
+| `scripts/extract` | Extract and apply patches to source tarballs |
+| `scripts/unpack` | Unpack sources (git, svn, wget, archive) |
+| `scripts/mkimage` | Create final filesystem image |
+| `scripts/get` | Source download dispatcher |
+| `scripts/get_archive` | Download archive sources |
+| `scripts/get_git` | Clone git sources |
+| `scripts/get_file` | Download file sources |
+| `scripts/create_addon` | Generate addon package structure |
+| `scripts/checkdeps` | Verify host build dependencies |
+| `scripts/autoreconf` | Run autoconf/automake |
+| `scripts/pkgjson` | Generate package dependency JSON |
+| `scripts/genbuildplan.py` | Python: generate parallel build plan from dependencies |
+| `scripts/pkgbuilder.py` | Python: package builder |
+| `scripts/uboot_helper` | U-Boot configuration helper |
+| `scripts/ccache_stats` | Display ccache statistics |
+| `scripts/makefile_helper` | Support for Makefile clean/distclean targets |
 
-### Build Environment Variables
+### Build Constraints
 
-```bash
-PROJECT=Rockchip           # Hardware platform
-DEVICE=RK3399              # Specific device
-ARCH=aarch64               # Target architecture
-DISTRO=LibreELEC           # Distribution name
-BUILD_WITH_DEBUG=yes       # Include debug symbols
-```
+From `config/options`:
+- **Cannot build as root** - exits with error
+- **No spaces in paths** - exits with error
+- Requires `gcc` and `g++` installed on host
+- Uses `ccache` if available (10G default cache)
+- Uses `/bin/dash` as config shell if available
 
 ---
 
-## 📦 Package Management
+## Package System
 
 ### Package Structure
 
-Every package has a `package.mk` file following this template:
+Every package is a directory containing a `package.mk` file:
 
 ```bash
 # SPDX-License-Identifier: GPL-2.0
@@ -153,25 +164,15 @@ Every package has a `package.mk` file following this template:
 
 PKG_NAME="example"
 PKG_VERSION="1.0.0"
-PKG_SHA256="abc123..."                    # SHA256 checksum
-PKG_ARCH="any"                            # Target architectures
+PKG_SHA256="abc123..."
 PKG_LICENSE="GPLv2"
-PKG_SITE="http://example.com"
-PKG_URL="https://github.com/example/example/archive/$PKG_VERSION.tar.gz"
-PKG_DEPENDS_TARGET="toolchain zlib openssl"  # Build dependencies
-PKG_SECTION="multimedia"                  # Package category
-PKG_SHORTDESC="Example package"
-PKG_LONGDESC="Longer description..."
-PKG_TOOLCHAIN="auto"                      # cmake, meson, autotools, manual
+PKG_SITE="https://example.com"
+PKG_URL="https://github.com/example/$PKG_NAME/archive/$PKG_VERSION.tar.gz"
+PKG_DEPENDS_TARGET="toolchain zlib openssl"
+PKG_LONGDESC="Description of what this package does."
+PKG_TOOLCHAIN="cmake"
 
-# Optional: CMake configuration
-PKG_CMAKE_OPTS_TARGET="-DENABLE_FEATURE=ON \
-                       -DBUILD_SHARED_LIBS=ON"
-
-# Optional: Build hooks
-pre_configure_target() {
-  # Custom pre-configuration steps
-}
+PKG_CMAKE_OPTS_TARGET="-DENABLE_FEATURE=ON"
 
 post_makeinstall_target() {
   # Custom post-installation steps
@@ -182,369 +183,252 @@ post_makeinstall_target() {
 
 | Variable | Description |
 |----------|-------------|
-| `PKG_NAME` | Package identifier |
-| `PKG_VERSION` | Version string or git hash |
-| `PKG_SHA256` | Source file checksum |
-| `PKG_DEPENDS_TARGET` | Build dependencies (space-separated) |
+| `PKG_NAME` | Package identifier (must match directory name) |
+| `PKG_VERSION` | Version string or git commit hash |
+| `PKG_SHA256` | Source file SHA256 checksum (required) |
+| `PKG_ARCH` | Target architectures (`any`, `x86_64`, `!arm`, etc.) |
+| `PKG_DEPENDS_TARGET` | Space-separated build dependencies |
 | `PKG_DEPENDS_HOST` | Host tool dependencies |
-| `PKG_BUILD_FLAGS` | Optimization flags (`+lto`, `+speed`, `-parallel`) |
 | `PKG_TOOLCHAIN` | Build system: `auto`, `cmake`, `meson`, `autotools`, `manual` |
+| `PKG_BUILD_FLAGS` | Optimization: `+lto`, `+speed`, `-parallel` |
 | `PKG_CMAKE_OPTS_TARGET` | CMake configuration flags |
 | `PKG_MESON_OPTS_TARGET` | Meson configuration flags |
+| `PKG_URL` | Source download URL |
+| `PKG_SITE` | Project homepage |
+| `PKG_LICENSE` | License identifier |
+| `PKG_LONGDESC` | Package description |
+| `PKG_SECTION` | Package category |
 
 ### Build Hooks (Execution Order)
 
 1. `pre_unpack_<target>()` - Before source extraction
-2. `unpack_<target>()` - Custom extraction logic
+2. `unpack_<target>()` - Custom extraction
 3. `post_unpack_<target>()` - After extraction
 4. `pre_configure_<target>()` - Before configuration
 5. `configure_<target>()` - Custom configuration
 6. `pre_make_<target>()` - Before compilation
-7. `make_<target>()` - Custom build commands
+7. `make_<target>()` - Custom build
 8. `post_make_<target>()` - After compilation
 9. `makeinstall_<target>()` - Custom install
-10. `post_makeinstall_<target>()` - After installation
+10. `post_makeinstall_<target>()` - After install
 
-Replace `<target>` with: `host`, `target`, `init`, `bootstrap`
+Where `<target>` is one of: `host`, `target`, `init`, `bootstrap`
 
 ### Dependency Syntax
 
 ```bash
-# Target dependencies (cross-compiled for device)
-PKG_DEPENDS_TARGET="toolchain zlib openssl:target"
+PKG_DEPENDS_TARGET="toolchain zlib openssl"      # Target dependencies
+PKG_DEPENDS_HOST="autoconf automake"              # Host tool dependencies
+PKG_DEPENDS_TARGET="toolchain ffmpeg:target"      # Explicit target qualifier
+```
 
-# Host dependencies (native tools)
-PKG_DEPENDS_HOST="autoconf automake"
+### Patches
 
-# Multiple targets
-PKG_DEPENDS_TARGET="toolchain ffmpeg:target SDL2:host"
+Patches go in `packages/<category>/<name>/patches/` with numeric prefix:
+```
+packages/multimedia/ffmpeg/patches/001-fix-build.patch
 ```
 
 ---
 
-## 🎯 Common Development Workflows
+## Distributions
 
-### 1. Building a Complete System
+### LibreELEC (main)
+- Full Kodi media center
+- PulseAudio, Bluetooth, BluRay, DVD support
+- Samba server/client, NFS, OpenVPN, WireGuard
+- SSH, nano editor, cron, installer
+- Joystick, CEC, IR remote support
+
+### LEIoT (IoT variant)
+- No Kodi (`MEDIACENTER="no"`)
+- No PulseAudio
+- Docker container support
+- Minimal appliance OS
+
+---
+
+## Hardware Platforms
+
+| Project | Devices | Architecture |
+|---------|---------|-------------|
+| Allwinner | A64, H2-plus, H3, H5, H6, R40 | arm / aarch64 |
+| Amlogic | AMLGX | aarch64 |
+| ARM | ARMv7, ARMv8 | arm / aarch64 |
+| Generic | Generic, Generic-legacy, gbm, wayland, x11 | x86_64 |
+| NXP | iMX6, iMX8 | arm / aarch64 |
+| Qualcomm | Dragonboard | aarch64 |
+| Rockchip | RK3288, RK3328, RK3399, RK356X, RK3576, RK3588 | arm / aarch64 |
+| RPi | RPi, RPi2, RPi4, RPi5 | arm / aarch64 |
+| Samsung | Exynos | aarch64 |
+
+### Architecture Support
+
+- **aarch64** - CPUs: cortex-a35, a53, a55, a57, a72, a73, a76; Variants: armv8-a, armv8.2-a
+- **arm** - CPUs: cortex-a5, a7, a8, a9, a15, a17, ARM1176JZF-S; FPU: NEON, VFP
+- **x86_64** - Variants: x86-64, x86-64-v2, x86-64-v3
+
+---
+
+## Development Workflows
+
+### Building a Complete System
 
 ```bash
-# Set environment
-export PROJECT=Rockchip
-export DEVICE=RK3399
-export ARCH=aarch64
-
-# Full build
-make release
-
-# Output: target/LibreELEC-RK3399.aarch64-X.Y.Z.img.gz
+PROJECT=Rockchip DEVICE=RK3399 ARCH=aarch64 make release
+# Output: target/LibreELEC-RK3399.aarch64-13.0-devel.img.gz
 ```
 
-### 2. Building a Single Package
+### Building a Single Package
 
 ```bash
-# Build package with dependencies
 scripts/build <package-name>
-
-# Examples
 scripts/build kodi
 scripts/build ffmpeg:target
 scripts/build gcc:host
 ```
 
-### 3. Adding a New Package
+### Adding a New Package
 
-1. **Create package directory:**
-   ```bash
-   mkdir -p packages/multimedia/newpkg
-   ```
+1. Create directory: `mkdir -p packages/<category>/<name>`
+2. Create `package.mk` with required variables (see template above)
+3. Add patches in `patches/` subdirectory if needed
+4. Test: `scripts/build <name>`
 
-2. **Create `package.mk`:** (see template above)
+### Modifying an Existing Package
 
-3. **Add patches (if needed):**
-   ```bash
-   packages/multimedia/newpkg/patches/001-fix-issue.patch
-   ```
+1. Edit `package.mk`
+2. Clean stamps: `rm -rf build.LibreELEC-*/<name>-*` and `rm -f target/*/stamps/<name>/build_target`
+3. Rebuild: `scripts/build <name>`
 
-4. **Test build:**
-   ```bash
-   scripts/build newpkg
-   ```
+### Adding a New Device
 
-### 4. Modifying an Existing Package
+1. Create: `mkdir -p projects/<project>/devices/<device>`
+2. Add `options` file with TARGET_CPU, firmware, graphics, kernel settings
+3. Build: `PROJECT=<project> DEVICE=<device> ARCH=<arch> make release`
 
-1. **Edit package.mk:** Update version, dependencies, or build flags
-2. **Clean old build:**
-   ```bash
-   rm -rf build.LibreELEC-*/newpkg-*
-   rm -f target/*/stamps/newpkg/build_target
-   ```
-3. **Rebuild:**
-   ```bash
-   scripts/build newpkg
-   ```
+### Docker Builds
 
-### 5. Creating a New Device Configuration
-
-1. **Create device directory:**
-   ```bash
-   mkdir -p projects/Rockchip/devices/RK3588
-   ```
-
-2. **Create `options` file:**
-   ```bash
-   # Target CPU
-   TARGET_CPU="cortex-a76.cortex-a55"
-   
-   # Firmware
-   UBOOT_FIRMWARE+=" atf"
-   ATF_PLATFORM="rk3588"
-   
-   # Graphics
-   GRAPHIC_DRIVERS="panfrost"
-   
-   # Kernel
-   KERNEL_TARGET="Image"
-   EXTRA_CMDLINE="console=uart8250,mmio32,0xfeb50000"
-   ```
-
-3. **Build:**
-   ```bash
-   PROJECT=Rockchip DEVICE=RK3588 ARCH=aarch64 make release
-   ```
-
-### 6. Testing Changes in Docker
+Dockerfiles available for: Debian Bookworm, Debian Trixie, Ubuntu Jammy (22.04), Noble (24.04), Questing (25.10), Resolute (26.04).
 
 ```bash
-# Build in Docker container
-docker run --rm \
-  -v $(pwd):/work \
-  -e PROJECT=Generic \
-  -e ARCH=x86_64 \
-  ghcr.io/libreelec/libreelec-build:latest \
-  make release
+# See tools/docker/ for Dockerfiles and tools/docker/README.md for instructions
 ```
 
 ---
 
-## 🔍 Important Conventions
+## Tools
 
-### Coding Standards
-
-1. **Shell Scripts:**
-   - Use `#!/bin/bash` shebang
-   - Include SPDX license header
-   - Use `die()` for fatal errors
-   - Use `print_color()` for colored output
-   - Validate arguments early
-
-2. **Package Files:**
-   - Always include `PKG_SHA256` for reproducible builds
-   - Use `PKG_DEPENDS_TARGET="toolchain ..."` to include toolchain
-   - Prefer `PKG_TOOLCHAIN="auto"` when possible
-   - Add meaningful `PKG_SHORTDESC` and `PKG_LONGDESC`
-
-3. **Patches:**
-   - Name patches with numeric prefix: `001-fix-foo.patch`
-   - Include descriptive patch headers
-   - Keep patches minimal and focused
-
-### Git Workflow
-
-1. **Branch naming:**
-   - Feature: `feature/add-package-name`
-   - Fix: `fix/package-name-issue`
-   - Update: `update/package-name-version`
-
-2. **Commit messages:**
-   ```
-   package-name: short description
-   
-   Longer description explaining why the change
-   was made and what it addresses.
-   ```
-
-3. **Pull requests:**
-   - One feature per PR
-   - Squash commits before submitting
-   - Create topic branches (not from master)
-
-### Testing
-
-1. **Before submitting changes:**
-   ```bash
-   # Clean build
-   make clean
-   
-   # Test build
-   scripts/build <changed-package>
-   
-   # Full system build (if critical)
-   make release
-   ```
-
-2. **Verify checksums:**
-   ```bash
-   # Update SHA256 after version bump
-   scripts/checksum <package-name>
-   ```
+| Tool | Purpose |
+|------|---------|
+| `tools/adjust_kernel_config` | Modify kernel configuration |
+| `tools/check_kernel_config` | Validate kernel config |
+| `tools/change_addon_version` | Update addon versions |
+| `tools/dashboard` | Build monitoring dashboard |
+| `tools/distro-tool` | Distribution management |
+| `tools/download-tool` | Source download manager |
+| `tools/download-cleaner` | Clean unused downloads |
+| `tools/mkpkg/` | Package creation utilities |
+| `tools/packages-checker` | Validate package metadata |
+| `tools/pkgcheck` | Package verification |
+| `tools/pkginfo` | Package information display |
+| `tools/update-pkg` | Update package versions |
+| `tools/update-scan` | Scan for package updates |
+| `tools/update-functions` | Shared update utilities |
+| `tools/viewconfig` | View build configuration |
+| `tools/viewplan` | View build plan |
+| `tools/mtstats.py` | Multi-thread build statistics |
+| `tools/fixlecode.py` | Fix LE code formatting |
+| `tools/repo-tool` | Repository management |
 
 ---
 
-## 🛠️ Helper Functions (config/functions)
+## Key Conventions
 
-Essential functions available in build scripts:
+### Shell Scripts
+- `#!/bin/bash` shebang
+- SPDX license header: `# SPDX-License-Identifier: GPL-2.0`
+- Use `die()` for fatal errors
+- Use `print_color()` for colored output
 
-```bash
-die "Error message"              # Abort with error
-print_color CLR_ERROR "text"     # Colored output
-listcontains "list" "item"       # Check list membership
-listremoveitem "list" "item"     # Remove from list
-setup_toolchain target           # Initialize cross-compiler
-add_depends "pkg1 pkg2"          # Add dependencies dynamically
+### Package Files
+- Always include `PKG_SHA256` for reproducible builds
+- First dependency should be `toolchain`
+- Use build system variables (`${SYSROOT_PREFIX}`, `${TARGET_PREFIX}`), never absolute paths
+- Keep `PKG_LONGDESC` descriptive
+
+### Commit Messages
+```
+package-name: short description
+
+Longer description explaining why the change was made.
 ```
 
-### Color Constants
+### Pull Requests
+- One feature per PR
+- Squash commits
+- Use topic branches
 
+---
+
+## Important Pitfalls
+
+**Do not:**
+- Modify `config/functions` or `config/options` without deep understanding of cascading effects
+- Skip `PKG_SHA256` checksums
+- Use absolute paths in `package.mk` files
+- Omit dependencies from `PKG_DEPENDS_TARGET`
+- Add unnecessary packages (the philosophy is "Just enough OS")
+- Build as root
+- Use paths with spaces
+
+**Do:**
+- Follow patterns from existing similar packages
+- Test with `scripts/build <package>` before full builds
+- Include all dependencies
+- Use appropriate `PKG_TOOLCHAIN` value
+- Check `PKG_ARCH` for platform compatibility
+- Clean stamps when modifying packages
+
+---
+
+## Build System Internals
+
+### Stamp-based Incremental Builds
+Stamps in `target/<build>/stamps/<pkg>/` track build phases (`build_target`, `install_target`). Delete stamps to force rebuild of a specific phase.
+
+### Multi-threaded Compilation
+Controlled by `config/multithread`. Uses slot-based job allocation with per-worker MTJOBID. Build plan generated by `scripts/genbuildplan.py` from dependency graph.
+
+### Toolchain Layout
+- Host tools: `build.LibreELEC-*/<pkg>.<host_arch>/`
+- Target packages: `build.LibreELEC-*/<pkg>-<version>/`
+- Sysroot: `build.LibreELEC-*/sysroot/`
+
+### Cross-Compilation Variables
 ```bash
-CLR_ERROR    # Red
-CLR_WARNING  # Yellow
-CLR_INFO     # Cyan
-CLR_SUCCESS  # Green
+TARGET_CC          # Cross-compiler
+TARGET_CFLAGS      # Compilation flags
+TARGET_LDFLAGS     # Linker flags
+SYSROOT_PREFIX     # Target system root
 ```
 
 ---
 
-## 📋 Key Files to Reference
+## Key Files Reference
 
 | File | Purpose |
 |------|---------|
-| `packages/readme.md` | **Comprehensive package documentation** |
-| `packages/packages.mk.template` | Package template |
-| `packages/packages.mk.addon_template` | Addon template |
-| `config/functions` | Core shell functions |
-| `config/options` | Default build options |
-| `scripts/build` | Package build logic |
-| `CONTRIBUTING.md` | Contribution guidelines |
-
----
-
-## 🚨 Common Pitfalls for AI Assistants
-
-### ❌ DON'T:
-
-1. **Modify `config/functions` or core scripts** without deep understanding
-   - These affect the entire build system
-   - Changes can break all packages
-
-2. **Skip `PKG_SHA256` checksums**
-   - Required for reproducible builds
-   - Source validation
-
-3. **Use absolute paths in package.mk**
-   - Use variables: `${SYSROOT_PREFIX}`, `${TARGET_PREFIX}`
-
-4. **Forget to declare dependencies**
-   - Missing `PKG_DEPENDS_TARGET` causes build failures
-
-5. **Break existing device configurations**
-   - Test across multiple devices when changing projects
-
-6. **Add unnecessary packages**
-   - Keep system minimal ("Just enough OS")
-
-### ✅ DO:
-
-1. **Follow existing patterns**
-   - Look at similar packages for examples
-   - Maintain consistent style
-
-2. **Test incrementally**
-   - Build individual packages first
-   - Then test full system build
-
-3. **Use parallel builds**
-   - Build system supports multi-threading
-   - Faster iteration
-
-4. **Document changes**
-   - Update `PKG_LONGDESC` for clarity
-   - Add comments for complex logic
-
-5. **Respect architecture limits**
-   - Check `PKG_ARCH` for platform support
-   - Use `!x86_64` to exclude architectures
-
----
-
-## 🎓 Advanced Topics
-
-### Build System Internals
-
-1. **Stamp-based incremental builds:**
-   - Stamps stored in `target/<build>/stamps/<pkg>/`
-   - `build_target`, `install_target`, etc.
-   - Delete stamps to force rebuild
-
-2. **Multi-threaded compilation:**
-   - Controlled by `config/multithread`
-   - Slot-based job allocation
-   - Parallel package builds
-
-3. **Toolchain structure:**
-   - Host tools: `build.LibreELEC-*/<pkg>.<host_arch>/`
-   - Target packages: `build.LibreELEC-*/<pkg>-<version>/`
-   - Sysroot: `build.LibreELEC-*/sysroot/`
-
-### Cross-Compilation
-
-```bash
-# Target variables
-TARGET_CC        # Cross-compiler
-TARGET_CFLAGS    # Compilation flags
-TARGET_LDFLAGS   # Linker flags
-SYSROOT_PREFIX   # Target system root
-```
-
-### Optimization Flags
-
-```bash
-PKG_BUILD_FLAGS="+lto"      # Link-time optimization
-PKG_BUILD_FLAGS="+speed"    # Optimize for speed
-PKG_BUILD_FLAGS="-parallel" # Disable parallel build
-```
-
----
-
-## 📚 Additional Resources
-
-- **Official Wiki:** https://wiki.libreelec.tv/
-- **Forum:** https://forum.libreelec.tv/
-- **Package Documentation:** `packages/readme.md`
-- **IRC:** #libreelec on Libera.Chat
-- **GitHub Issues:** Report bugs and feature requests
-
----
-
-## 🤖 AI Assistant Checklist
-
-When modifying this repository, always:
-
-- [ ] Understand the package category (mediacenter, graphics, network, etc.)
-- [ ] Check existing similar packages for patterns
-- [ ] Verify `PKG_SHA256` checksums
-- [ ] Include all build dependencies in `PKG_DEPENDS_TARGET`
-- [ ] Use appropriate `PKG_TOOLCHAIN` (auto, cmake, meson, etc.)
-- [ ] Test build with `scripts/build <package>`
-- [ ] Follow naming conventions for patches
-- [ ] Maintain minimal, focused changes
-- [ ] Document changes in package descriptions
-- [ ] Consider cross-platform compatibility
-
----
-
-**Note:** This is a complex build system. When in doubt:
-1. Reference existing packages in the same category
-2. Read `packages/readme.md` for detailed documentation
-3. Test changes incrementally
-4. Keep modifications minimal and focused
-
-*Generated for AI assistants working with the LibreELEC/EmuELEC codebase.*
+| `config/options` | Core build configuration loading and defaults |
+| `config/functions` | Shell helper functions (die, listcontains, setup_toolchain, etc.) |
+| `config/path` | Build directory structure definitions |
+| `config/graphic` | Graphics driver configuration (gallium, xorg, vulkan) |
+| `config/optimize` | Compiler optimization flags (LTO, debug, linker) |
+| `config/multithread` | Parallel build orchestration |
+| `config/arch.aarch64` | ARM64 compiler tuning |
+| `config/arch.arm` | ARM32 compiler tuning |
+| `config/arch.x86_64` | x86_64 compiler tuning |
+| `config/sources` | Source download mirror URLs |
+| `distributions/LibreELEC/options` | Full distribution feature flags |
+| `distributions/LibreELEC/version` | Version numbers (OS 13.0, Addon 12.80.5) |
+| `CONTRIBUTING.md` | Contribution guidelines and PR process |
